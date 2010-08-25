@@ -7,12 +7,11 @@ module ActiveRecord
         elsif ["AU"].include?(country_code)
           /(^(1300|1800|1900|1902)\d{6}$)|(^([0]?[1|2|3|7|8])?[1-9][0-9]{7}$)|(^13\d{4}$)|(^[0]?4\d{8}$)/
         elsif ["US", "CA"].include?(country_code)
-          /[2-9]\d{2}[2-9]\d{2}\d{4}/
+          /1?[2-9]\d{2}[2-9]\d{2}\d{4}/
         else
           nil
         end
       end
-      
 
       def validates_as_phone(*args)        
         configuration = { :message => ActiveRecord::Errors.default_error_messages[:invalid],
@@ -32,7 +31,7 @@ module ActiveRecord
             record.errors.add(attr_name, configuration[:message])
           else
             record.send(attr_name.to_s + '=',
-              format_as_phone(new_value, record.send(configuration[:country]), record.send(configuration[:area_key]))
+              format_as_phone(new_value, configuration[:country], configuration[:area_key])
             ) if configuration[:set]
           end
         end
