@@ -12,15 +12,17 @@ areas.
 You can install the plugin the traditional way. Go to your application root
 and do:
 
-  script/plugin install git://github.com/kristinalim/validates_as_phone.git
+  script/plugin install git://github.com/paulschreiber/validates_as_phone.git
 
 == Validate your model attributes
 
 Example:
 
   class Person < ActiveRecord::Base
-    validates_as_phone :phone, :allow_blank => true, :set => true
+    validates_as_phone :phone, :country => "CA", :allow_blank => true, :set => true
   end
+
+Supported countries are Canada (CA), the United States (US) and Australia (AU).
 
 = License
 
@@ -28,6 +30,9 @@ Written by Kristina Lim (http://i-think.com.ph/kristina/)
 
 Copyright (c) 2008 Syndeo Media
 http://syndeomedia.com
+
+US and Canada support added by Paul Schreiber (http://paulschreiber.com/)
+Last modified 25 August 2010
 
 = Contributing
 
