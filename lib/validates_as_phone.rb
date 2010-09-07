@@ -21,9 +21,7 @@ module ActiveRecord
         configuration.update(args.pop) if args.last.is_a?(Hash)
         
         validates_each(args, configuration) do |record, attr_name, value|
-          if configuration[:country].nil?
-            country = false
-          elsif configuration[:country].is_a?(String)
+          if configuration[:country].is_a?(String)
             country = configuration[:country]
           elsif configuration[:country].is_a?(Symbol) and record.respond_to?(configuration[:country])
             country = record.send(configuration[:country])
