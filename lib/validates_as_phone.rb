@@ -16,14 +16,28 @@ module ActiveRecord
       def validates_as_phone(*args)        
         configuration = { :message => ActiveRecord::Errors.default_error_messages[:invalid],
                           :on => :save, :with => nil,
-                          :country => :phone_country, :area_key => :phone_area_key
+                          :area_key => :phone_area_key
                         }
         configuration.update(args.pop) if args.last.is_a?(Hash)
-
-        current_regex = regex_for_country(configuration[:country])
-        return false unless current_regex
-
+        
         validates_each(args, configuration) do |record, attr_name, value|
+          if configuration[:country] == nil
+            country = false
+          elsif configuration[:country].is_a?(String)
+            country = configuration[:country]
+          elsif configuration[:country].is_a?(Symbol) and record.respond_to?(configuration[:country])
+            country = record.send(configuration[:country])
+          elsif record.respond_to?(:country)
+            country = record.send(:country)
+          else
+            country = false
+          end
+          
+          puts "country = #{country.inspect}"
+
+          current_regex = regex_for_country(country)
+          next unless current_regex
+
           new_value = value.to_s.gsub(/[^0-9]/, '')
           new_value ||= ''
 
@@ -31,7 +45,7 @@ module ActiveRecord
             record.errors.add(attr_name, configuration[:message])
           else
             record.send(attr_name.to_s + '=',
-              format_as_phone(new_value, configuration[:country], configuration[:area_key])
+              format_as_phone(new_value, country, configuration[:area_key])
             ) if configuration[:set]
           end
         end
