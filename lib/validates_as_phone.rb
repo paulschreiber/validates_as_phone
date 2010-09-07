@@ -33,8 +33,6 @@ module ActiveRecord
             country = false
           end
           
-          puts "country = #{country.inspect}"
-
           current_regex = regex_for_country(country)
           next unless current_regex
 
