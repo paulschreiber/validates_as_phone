@@ -33,6 +33,7 @@ module ActiveRecord
             country = false
           end
           
+          next unless country          
           current_regex = regex_for_country(country)
           next unless current_regex
 
