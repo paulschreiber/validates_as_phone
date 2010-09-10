@@ -14,7 +14,7 @@ module ActiveRecord
       end
 
       def validates_as_phone(*args)        
-        configuration = { :message => ActiveRecord::Errors.default_error_messages[:invalid],
+        configuration = { :message => I18n.translate('activerecord.errors.messages.invalid'),
                           :on => :save, :with => nil,
                           :area_key => :phone_area_key
                         }
