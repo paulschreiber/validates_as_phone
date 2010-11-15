@@ -49,7 +49,7 @@ module ActiveRecord
       end
 
       def format_as_phone(arg, country_code = nil, area_key = nil)
-        return nil if (arg.blank? or country_code.blank? or !REGEX_LIST.has_key?(country_code))
+        return nil if (arg.blank? or country_code.blank? or !regex_for_country(country_code))
 
         number = arg.gsub(/[^0-9]/, '')
 
