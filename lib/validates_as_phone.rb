@@ -7,7 +7,7 @@ module ActiveRecord
         elsif ["AU"].include?(country_code)
           /(^(1300|1800|1900|1902)\d{6}$)|(^([0]?[1|2|3|7|8])?[1-9][0-9]{7}$)|(^13\d{4}$)|(^[0]?4\d{8}$)/
         elsif ["US", "CA"].include?(country_code)
-          /1?[2-9]\d{2}[2-9]\d{2}\d{4}/
+          /^1?[2-9]\d{2}[2-9]\d{2}\d{4}/
         else
           nil
         end
@@ -30,7 +30,7 @@ module ActiveRecord
           else
             country = false
           end
-          
+
           next unless country          
           current_regex = regex_for_country(country)
           next unless current_regex
@@ -42,7 +42,7 @@ module ActiveRecord
             record.errors.add(attr_name, configuration[:message])
           else
             record.send(attr_name.to_s + '=',
-              format_as_phone(new_value, country, configuration[:area_key])
+              format_as_phone(value, country, configuration[:area_key])
             ) if configuration[:set]
           end
         end
@@ -74,7 +74,8 @@ module ActiveRecord
           end
         elsif ["CA", "US"].include?(country_code)
           digit_count = number.length
-          if digit_count < 10 or digit_count > 11
+          # if it's too short
+          if digit_count < 10
             return number
           end
 
@@ -83,16 +84,23 @@ module ActiveRecord
             return number
           end
 
-          # if it's 11 digits and starts with a 1, chop off the one
-          if digit_count == 11
+          # strip off any leading ones
+          if number[0..0] == "1"
             number = number[1..10]
           end
-
+          
           area_code = number[0..2]
           exchange = number[3..5]
-          suffix = number[6..9]
+          sln = number[6..9]
+          
+          if number.size == 10
+            extension = nil
+          else
+            # save everything after the SLN as extension
+            extension = " %s" % arg[(arg.index(sln)+4)..-1].strip
+          end
 
-          number = "(%s) %s-%s" % [area_code, exchange, suffix]
+          "(%s) %s-%s%s" % [area_code, exchange, sln, extension]
         end
       end
 
