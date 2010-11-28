@@ -14,10 +14,7 @@ module ActiveRecord
       end
 
       def validates_as_phone(*args)        
-        configuration = { :message => I18n.translate('activerecord.errors.messages.invalid'),
-                          :on => :save, :with => nil,
-                          :area_key => :phone_area_key
-                        }
+        configuration = { :on => :save, :with => nil, :area_key => :phone_area_key }
         configuration.update(args.pop) if args.last.is_a?(Hash)
         
         validates_each(args, configuration) do |record, attr_name, value|
@@ -39,7 +36,11 @@ module ActiveRecord
           new_value ||= ''
 
           unless (configuration[:allow_blank] && new_value.blank?) || new_value =~ current_regex
-            record.errors.add(attr_name, configuration[:message])
+            message = I18n.t("activerecord.errors.models.#{name.underscore}.attributes.#{attr_name}.invalid", 
+                                          :default => [:"activerecord.errors.models.#{name.underscore}.invalid", 
+                                                      configuration[:message],
+                                                      :'activerecord.errors.messages.invalid'])
+            record.errors.add(attr_name, message)
           else
             record.send(attr_name.to_s + '=',
               format_as_phone(value, country, configuration[:area_key])
