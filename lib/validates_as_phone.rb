@@ -35,18 +35,24 @@ module ActiveRecord
           new_value = value.to_s.gsub(/[^0-9]/, '')
           new_value ||= ''
 
+          message = I18n.t("activerecord.errors.models.#{name.underscore}.attributes.#{attr_name}.invalid", 
+                                        :default => [:"activerecord.errors.models.#{name.underscore}.invalid", 
+                                                    configuration[:message],
+                                                    :'activerecord.errors.messages.invalid'])
+
           unless (configuration[:allow_blank] && new_value.blank?) || new_value =~ current_regex
-            message = I18n.t("activerecord.errors.models.#{name.underscore}.attributes.#{attr_name}.invalid", 
-                                          :default => [:"activerecord.errors.models.#{name.underscore}.invalid", 
-                                                      configuration[:message],
-                                                      :'activerecord.errors.messages.invalid'])
             record.errors.add(attr_name, message)
           else
-            record.send(attr_name.to_s + '=',
-              format_as_phone(value, country, configuration[:area_key])
-            ) if configuration[:set]
-          end
-        end
+            if configuration[:set]
+              formatted_phone = format_as_phone(value, country, configuration[:area_key])
+              if formatted_phone.nil?
+                record.errors.add(attr_name, message)
+              else
+                record.send(attr_name.to_s + '=', formatted_phone)
+              end
+            end # configuration
+          end # unless
+        end # validates_each
       end
 
       def format_as_phone(arg, country_code = nil, area_key = nil)
@@ -94,10 +100,10 @@ module ActiveRecord
           else
             # save everything after the SLN as extension
             sln_index = arg.index(sln)
-            # if something went wrong, return the number
+            # if something went wrong, return nil so we can error out
             # i.e. 519 444 000 ext 123 would cause sln to be 0001, which is not found
             # in the original string
-            return number if sln_index.nil?
+            return nil if sln_index.nil?
             extension = " %s" % arg[(sln_index+4)..-1].strip
           end
 
