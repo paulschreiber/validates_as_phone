@@ -80,11 +80,6 @@ module ActiveRecord
             return number
           end
 
-          # if it's 11 digits and doesn't start with a 1
-          if digit_count == 11 and number[0..0] != "1"
-            return number
-          end
-
           # strip off any leading ones
           if number[0..0] == "1"
             number = number[1..10]
@@ -94,11 +89,16 @@ module ActiveRecord
           exchange = number[3..5]
           sln = number[6..9]
           
-          if number.size == 10
+          if digit_count == 10
             extension = nil
           else
             # save everything after the SLN as extension
-            extension = " %s" % arg[(arg.index(sln)+4)..-1].strip
+            sln_index = arg.index(sln)
+            # if something went wrong, return the number
+            # i.e. 519 444 000 ext 123 would cause sln to be 0001, which is not found
+            # in the original string
+            return number if sln_index.nil?
+            extension = " %s" % arg[(sln_index+4)..-1].strip
           end
 
           "(%s) %s-%s%s" % [area_code, exchange, sln, extension]
