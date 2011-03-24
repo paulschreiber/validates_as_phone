@@ -14,7 +14,7 @@ module ActiveRecord
       end
 
       def validates_as_phone(*args)        
-        configuration = { :on => :save, :with => nil, :area_key => :phone_area_key }
+        configuration = { :with => nil, :area_key => :phone_area_key }
         configuration.update(args.pop) if args.last.is_a?(Hash)
         
         validates_each(args, configuration) do |record, attr_name, value|
