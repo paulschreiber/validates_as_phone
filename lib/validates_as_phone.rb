@@ -13,10 +13,10 @@ module ActiveRecord
         end
       end
 
-      def validates_as_phone(*args)        
+      def validates_as_phone(*args)
         configuration = { :with => nil, :area_key => :phone_area_key }
         configuration.update(args.pop) if args.last.is_a?(Hash)
-        
+
         validates_each(args, configuration) do |record, attr_name, value|
           if configuration[:country].is_a?(String)
             country = configuration[:country]
@@ -28,15 +28,15 @@ module ActiveRecord
             country = false
           end
 
-          next unless country          
+          next unless country
           current_regex = regex_for_country(country)
           next unless current_regex
 
           new_value = value.to_s.gsub(/[^0-9]/, '')
           new_value ||= ''
 
-          message = I18n.t("activerecord.errors.models.#{name.underscore}.attributes.#{attr_name}.invalid", 
-                                        :default => [:"activerecord.errors.models.#{name.underscore}.invalid", 
+          message = I18n.t("activerecord.errors.models.#{name.underscore}.attributes.#{attr_name}.invalid",
+                                        :default => [:"activerecord.errors.models.#{name.underscore}.invalid",
                                                     configuration[:message],
                                                     :'activerecord.errors.messages.invalid'])
 
@@ -90,11 +90,11 @@ module ActiveRecord
           if number[0..0] == "1"
             number = number[1..10]
           end
-          
+
           area_code = number[0..2]
           exchange = number[3..5]
           sln = number[6..9]
-          
+
           if digit_count == 10
             extension = nil
           else
@@ -125,6 +125,6 @@ module ActiveRecord
           '02'
         end
       end
-    end    
+    end
   end
 end
