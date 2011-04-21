@@ -1,6 +1,8 @@
 module ActiveRecord
   module Validations
     module ClassMethods
+      AU_AREA_CODES = {:NSW => '02', :ACT => '02', :VIC => '03', :TAS => '03', :QLD => '07', :SA => '08', :NT => '08', :WA => '08'}
+
       def regex_for_country(country_code)
         if country_code.blank?
           nil
@@ -112,18 +114,7 @@ module ActiveRecord
       end
 
       def area_code_for_key(key)
-        case key
-          when 'NSW' then '02'
-          when 'ACT' then '02'
-          when 'VIC' then '03'
-          when 'TAS' then '03'
-          when 'QLD' then '07'
-          when 'SA'  then '08'
-          when 'NT'  then '08'
-          when 'WA'  then '08'
-        else
-          '02'
-        end
+        AU_AREA_CODES[key.to_sym] || '02'
       end
     end
   end
