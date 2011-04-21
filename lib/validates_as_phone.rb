@@ -113,14 +113,14 @@ module ActiveRecord
 
       def area_code_for_key(key)
         case key
-          when 'NSW': '02'
-          when 'ACT': '02'
-          when 'VIC': '03'
-          when 'TAS': '03'
-          when 'QLD': '07'
-          when 'SA' : '08'
-          when 'NT' : '08'
-          when 'WA' : '08'
+          when 'NSW' then '02'
+          when 'ACT' then '02'
+          when 'VIC' then '03'
+          when 'TAS' then '03'
+          when 'QLD' then '07'
+          when 'SA'  then '08'
+          when 'NT'  then '08'
+          when 'WA'  then '08'
         else
           '02'
         end
